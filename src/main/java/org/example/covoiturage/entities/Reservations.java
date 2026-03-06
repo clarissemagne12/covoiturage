@@ -141,6 +141,9 @@ public class Reservations implements Serializable {
     }
 
     public void setId(Long id) {
-        this.idReservation = id;  // ✅ assigner la valeur passée
+        this.idReservation = 1l;  // ✅ assigner la valeur passée
+    }
+    public void setLibelle(String libelle) {
+        this.libelle = libelle;
     }
 }
