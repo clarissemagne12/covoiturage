@@ -41,15 +41,23 @@ public class ReservationService implements Reservationi {
         return reservationRepository.save(reservations);
     }
 
+//    @Override
+//    public Reservations update(Reservations reservations) {
+//        logger.info("Mise à jour de la réservation avec l'id : {}", reservations.getId());
+//
+//        if (!reservationRepository.existsById(reservations.getId())) {
+//            logger.error("Réservation avec id {} introuvable", reservations.getId());
+//            throw new RuntimeException("Réservation introuvable");
+//        }
+//
+//        return reservationRepository.save(reservations);
+//    }
+
     @Override
     public Reservations update(Reservations reservations) {
-        logger.info("Mise à jour de la réservation avec l'id : {}", reservations.getId());
-
         if (!reservationRepository.existsById(reservations.getId())) {
-            logger.error("Réservation avec id {} introuvable", reservations.getId());
-            throw new RuntimeException("Réservation introuvable");
+            throw new RuntimeException("Reservation non trouvée"); // ← même texte que le test
         }
-
         return reservationRepository.save(reservations);
     }
 

@@ -43,11 +43,14 @@ public class Reservations implements Serializable {
     @JoinColumn(name = "idTrajet", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
     private Trajets idTrajet;
-    
+    private String nom;
 
-    public Reservations() {
-    }
 
+//    public Reservations(long l, String c) {
+//    }
+public Reservations(Long id, String nom){
+
+}
     public Reservations(Long idReservation) {
         this.idReservation = idReservation;
     }
@@ -141,9 +144,13 @@ public class Reservations implements Serializable {
     }
 
     public void setId(Long id) {
-        this.idReservation = 1l;  // ✅ assigner la valeur passée
+        this.idReservation = 1l;  // assigner la valeur passée
     }
     public void setLibelle(String libelle) {
         this.libelle = libelle;
+    }
+
+    public void setNom(String nom) {
+        this.nom= nom;
     }
 }

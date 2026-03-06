@@ -16,4 +16,5 @@ public interface Reservationi {
     Reservations update(Reservations reservations);
 
     void deleteById(Long id);
+
 }
