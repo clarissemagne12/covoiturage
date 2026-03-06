@@ -47,20 +47,6 @@ class ReservationServiceTest {
         List<Reservations> reservations = reservationService.findAll();
         assertEquals(3, reservations.size(), "La taille de la liste doit être 3");
     }
-//
-//    @Test
-//    void testUpdateReservationNotFound() {
-//        Reservations r = new Reservations(5L, "Z");
-//        when(reservationRepository.existsById(5L)).thenReturn(false);
-//
-//        Exception exception = assertThrows(RuntimeException.class, () -> {
-//            reservationService.update(r);
-//        });
-//
-//        assertEquals("Reservation non trouvée", exception.getMessage());
-//        verify(reservationRepository).existsById(5L);
-//    }
-
     @Test
     void testDeleteByIdExists() {
         when(reservationRepository.existsById(1L)).thenReturn(true);
