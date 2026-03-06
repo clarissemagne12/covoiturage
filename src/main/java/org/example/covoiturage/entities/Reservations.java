@@ -139,4 +139,8 @@ public class Reservations implements Serializable {
     public Long getId() {
         return idReservation;
     }
+
+    public void setId(Long id) {
+        this.idReservation = id;  // ✅ assigner la valeur passée
+    }
 }
