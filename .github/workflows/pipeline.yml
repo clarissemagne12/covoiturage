@@ -1,4 +1,4 @@
-name: Java CI with Maven
+name: Java CI with Maven and SonarQube
 
 on:
   push:
@@ -6,9 +6,22 @@ on:
   pull_request:
     branches: [ main ]
 
+sservices:
+  mysql:
+    image: mysql:8
+    env:
+      MYSQL_ROOT_PASSWORD: voiture1
+      MYSQL_DATABASE: covoiturage
+    ports:
+      - 3306:3306
+    options: >-
+      --health-cmd="mysqladmin ping --silent"
+      --health-interval=10s
+      --health-timeout=5s
+      --health-retries=5
+
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -21,5 +34,39 @@ jobs:
           distribution: temurin
           java-version: '17'
 
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Wait for MySQL
+        run: |
+          until mysqladmin ping -h127.0.0.1 -uroot -proot --silent; do
+            echo "Waiting for MySQL..."
+            sleep 5
+          done
+
       - name: Build with Maven
-        run: mvn clean install
+        run: mvn clean install -B -DskipTests=false
+
+      - name: Run tests
+        run: mvn test
+
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: target/surefire-reports
+
+      - name: SonarQube Analysis
+        if: ${{ secrets.SONAR_TOKEN != '' }}
+        env:
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: mvn sonar:sonar \
+          -Dsonar.projectKey=projetTest \
+          -Dsonar.host.url=$SONAR_HOST_URL \
+          -Dsonar.login=$SONAR_TOKEN
