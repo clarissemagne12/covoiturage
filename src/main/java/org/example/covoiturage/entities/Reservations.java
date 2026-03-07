@@ -3,14 +3,13 @@ package org.example.covoiturage.entities;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-
 import java.io.Serializable;
 import java.util.Date;
 
 @Entity
 @Getter
 @Setter
-@Table(name = "reservations", catalog = "covoiturage")
+@Table(name = "reservations")
 public class Reservations implements Serializable {
 
     @Id
@@ -37,20 +36,11 @@ public class Reservations implements Serializable {
     private Trajets idTrajet;
 
     // Constructeur vide requis par JPA
-    public Reservations() {
-    }
+    public Reservations() {}
 
-    // Constructeur pratique pour les tests
+    // Constructeur pratique pour tests
     public Reservations(Long id, String libelle) {
         this.idReservation = id;
-        this.libelle = libelle;
-    }
-
-    public String getLibelle() {
-        return libelle;
-    }
-
-    public void setLibelle(String libelle) {
         this.libelle = libelle;
     }
 

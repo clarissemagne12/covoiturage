@@ -13,7 +13,7 @@ import java.util.Optional;
 @Service
 public class ReservationService implements Reservationi {
 
-    private static final Logger logger = LoggerFactory.getLogger(ReservationService.class);
+    private final Logger logger = LoggerFactory.getLogger(ReservationService.class);
 
     private final ReservationRepository reservationRepository;
 
@@ -41,29 +41,22 @@ public class ReservationService implements Reservationi {
 
     @Override
     public Reservations update(Reservations reservations) {
-
         if (reservations == null || reservations.getId() == null) {
             throw new RuntimeException("Reservation non trouvée");
         }
-
         if (!reservationRepository.existsById(reservations.getId())) {
             throw new RuntimeException("Reservation non trouvée");
         }
-
         logger.info("Mise à jour de la réservation avec l'id : {}", reservations.getId());
         return reservationRepository.save(reservations);
     }
 
     @Override
     public void deleteById(Long id) {
-
         if (!reservationRepository.existsById(id)) {
             throw new RuntimeException("Reservation non trouvée");
         }
-
         logger.warn("Suppression de la réservation avec l'id : {}", id);
         reservationRepository.deleteById(id);
     }
-
-
 }

@@ -3,18 +3,20 @@ package org.example.covoiturage;
 import org.example.covoiturage.entities.Reservations;
 import org.example.covoiturage.repositories.ReservationRepository;
 import org.example.covoiturage.services.ReservationService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
 
     @Mock
@@ -23,81 +25,102 @@ class ReservationServiceTest {
     @InjectMocks
     private ReservationService reservationService;
 
-    @BeforeEach
-    void setUp() {
-        // Cette ligne est essentielle pour que reservationRepository soit injecté
-        MockitoAnnotations.openMocks(this);
-    }
-
     @Test
-    void testSaveReservation() {
-        Reservations r1 = new Reservations(1L, "A");
+    void testFindAll() {
+        List<Reservations> reservations = new ArrayList<>();
+        reservations.add(new Reservations(1L, "A"));
+        when(reservationRepository.findAll()).thenReturn(reservations);
 
-        when(reservationRepository.save(r1)).thenReturn(r1);
+        List<Reservations> result = reservationService.findAll();
 
-        Reservations saved = reservationService.save(r1);
-
-        assertEquals(r1, saved);
-        verify(reservationRepository).save(r1);
-    }
-
-    @Test
-    void testFindAllReservations() {
-        Reservations r1 = new Reservations(1L, "A");
-        Reservations r2 = new Reservations(2L, "B");
-
-        when(reservationRepository.findAll()).thenReturn(Arrays.asList(r1, r2));
-
-        List<Reservations> list = reservationService.findAll();
-
-        assertEquals(2, list.size());
-        assertTrue(list.contains(r1));
-        assertTrue(list.contains(r2));
-
+        assertNotNull(result);
+        assertEquals(1, result.size());
         verify(reservationRepository).findAll();
     }
 
     @Test
-    void testDeleteByIdExists() {
-        Long id = 1L;
+    void testFindByIdFound() {
+        Reservations reservation = new Reservations(1L, "A");
+        when(reservationRepository.findById(1L)).thenReturn(Optional.of(reservation));
 
-        // Mock : la réservation existe
-        when(reservationRepository.existsById(id)).thenReturn(true);
-        doNothing().when(reservationRepository).deleteById(id);
+        Optional<Reservations> result = reservationService.findById(1L);
 
-        // Appel de la méthode
-        reservationService.deleteById(id);
-
-        // Vérification
-        verify(reservationRepository).existsById(id);
-        verify(reservationRepository).deleteById(id);
+        assertTrue(result.isPresent());
+        assertEquals(1L, result.get().getId());
+        verify(reservationRepository).findById(1L);
     }
 
     @Test
-    void testUpdateReservationNotFound() {
-        Reservations r = new Reservations(5L, "Z");
+    void testFindByIdNotFound() {
+        when(reservationRepository.findById(2L)).thenReturn(Optional.empty());
 
-        when(reservationRepository.existsById(5L)).thenReturn(false);
+        Optional<Reservations> result = reservationService.findById(2L);
+
+        assertTrue(result.isEmpty());
+        verify(reservationRepository).findById(2L);
+    }
+
+    @Test
+    void testSave() {
+        Reservations reservation = new Reservations(1L, "A");
+        when(reservationRepository.save(reservation)).thenReturn(reservation);
+
+        Reservations result = reservationService.save(reservation);
+
+        assertNotNull(result);
+        assertEquals(1L, result.getId());
+        verify(reservationRepository).save(reservation);
+    }
+
+    @Test
+    void testUpdateSuccess() {
+        Reservations reservation = new Reservations(1L, "A");
+        when(reservationRepository.existsById(1L)).thenReturn(true);
+        when(reservationRepository.save(reservation)).thenReturn(reservation);
+
+        Reservations result = reservationService.update(reservation);
+
+        assertNotNull(result);
+        assertEquals(1L, result.getId());
+        verify(reservationRepository).existsById(1L);
+        verify(reservationRepository).save(reservation);
+    }
+
+    @Test
+    void testUpdateNotFound() {
+        Reservations reservation = new Reservations(2L, "B");
+        when(reservationRepository.existsById(2L)).thenReturn(false);
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () ->
+                reservationService.update(reservation)
+        );
+
+        assertEquals("Reservation non trouvée", exception.getMessage());
+        verify(reservationRepository).existsById(2L);
+        verify(reservationRepository, never()).save(any());
+    }
+
+    @Test
+    void testDeleteByIdExists() {
+        when(reservationRepository.existsById(1L)).thenReturn(true);
+        doNothing().when(reservationRepository).deleteById(1L);
+
+        reservationService.deleteById(1L);
+
+        verify(reservationRepository).existsById(1L);
+        verify(reservationRepository).deleteById(1L);
+    }
+
+    @Test
+    void testDeleteByIdNotExists() {
+        when(reservationRepository.existsById(2L)).thenReturn(false);
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            reservationService.update(r);
+            reservationService.deleteById(2L);
         });
 
         assertEquals("Reservation non trouvée", exception.getMessage());
-        verify(reservationRepository).existsById(5L);
-    }
-
-    @Test
-    void testUpdateReservationSuccess() {
-        Reservations r = new Reservations(5L, "Z");
-
-        when(reservationRepository.existsById(5L)).thenReturn(true);
-        when(reservationRepository.save(r)).thenReturn(r);
-
-        Reservations updated = reservationService.update(r);
-
-        assertEquals(r, updated);
-        verify(reservationRepository).existsById(5L);
-        verify(reservationRepository).save(r);
+        verify(reservationRepository).existsById(2L);
+        verify(reservationRepository, never()).deleteById(anyLong());
     }
 }

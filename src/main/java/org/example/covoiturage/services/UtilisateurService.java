@@ -14,7 +14,7 @@ import java.util.Optional;
 public class UtilisateurService implements Utilisateuri {
 
     private final UtilisateurRepository utilisateurRepository;
-    private static final Logger logger = LoggerFactory.getLogger(UtilisateurService.class);
+    private  final Logger logger = LoggerFactory.getLogger(UtilisateurService.class);
 
     public UtilisateurService (UtilisateurRepository utilisateurRepository) {
         this.utilisateurRepository = utilisateurRepository;

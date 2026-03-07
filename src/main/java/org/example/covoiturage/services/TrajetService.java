@@ -14,7 +14,7 @@ import java.util.Optional;
 public class TrajetService implements Trajeti {
 
     private final TrajetRepository trajetRepository;
-    private static final Logger logger = LoggerFactory.getLogger(TrajetService.class);
+    private  final Logger logger = LoggerFactory.getLogger(TrajetService.class);
 
     public TrajetService(TrajetRepository trajetRepository) {
         this.trajetRepository = trajetRepository;
