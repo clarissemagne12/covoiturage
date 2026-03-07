@@ -14,7 +14,6 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 class ReservationServiceTest {
 
@@ -31,24 +30,38 @@ class ReservationServiceTest {
 
     @Test
     void testSaveReservation() {
+
+        Reservations r1 = new Reservations(1L, "A");
+
+        when(reservationRepository.save(r1)).thenReturn(r1);
+
+        Reservations saved = reservationService.save(r1);
+
+        assertNotNull(saved);
+        assertEquals("A", saved.getLibelle());
+
+        verify(reservationRepository).save(r1);
+    }
+
+    @Test
+    void testFindAllReservations() {
+
         Reservations r1 = new Reservations(1L, "A");
         Reservations r2 = new Reservations(2L, "B");
         Reservations r3 = new Reservations(3L, "C");
 
-        when(reservationRepository.save(r1)).thenReturn(r1);
-        when(reservationRepository.save(r2)).thenReturn(r2);
-        when(reservationRepository.save(r3)).thenReturn(r3);
-        when(reservationRepository.findAll()).thenReturn(Arrays.asList(r1, r2, r3));
-
-        reservationService.save(r1);
-        reservationService.save(r2);
-        reservationService.save(r3);
+        when(reservationRepository.findAll())
+                .thenReturn(Arrays.asList(r1, r2, r3));
 
         List<Reservations> reservations = reservationService.findAll();
-        assertEquals(3, reservations.size(), "La taille de la liste doit être 3");
+
+        assertEquals(3, reservations.size());
+        verify(reservationRepository).findAll();
     }
+
     @Test
     void testDeleteByIdExists() {
+
         when(reservationRepository.existsById(1L)).thenReturn(true);
 
         reservationService.deleteById(1L);
