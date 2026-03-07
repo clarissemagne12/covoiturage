@@ -1,8 +1,5 @@
 package org.example.covoiturage;
 
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.example.covoiturage.entities.Reservations;
 import org.example.covoiturage.repositories.ReservationRepository;
 import org.example.covoiturage.services.ReservationService;
@@ -15,6 +12,9 @@ import org.mockito.MockitoAnnotations;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 class ReservationServiceTest {
 
     @Mock
@@ -25,48 +25,79 @@ class ReservationServiceTest {
 
     @BeforeEach
     void setUp() {
+        // Cette ligne est essentielle pour que reservationRepository soit injecté
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
     void testSaveReservation() {
-
         Reservations r1 = new Reservations(1L, "A");
 
         when(reservationRepository.save(r1)).thenReturn(r1);
 
         Reservations saved = reservationService.save(r1);
 
-        assertNotNull(saved);
-        assertEquals("A", saved.getLibelle());
-
+        assertEquals(r1, saved);
         verify(reservationRepository).save(r1);
     }
 
     @Test
     void testFindAllReservations() {
-
         Reservations r1 = new Reservations(1L, "A");
         Reservations r2 = new Reservations(2L, "B");
-        Reservations r3 = new Reservations(3L, "C");
 
-        when(reservationRepository.findAll())
-                .thenReturn(Arrays.asList(r1, r2, r3));
+        when(reservationRepository.findAll()).thenReturn(Arrays.asList(r1, r2));
 
-        List<Reservations> reservations = reservationService.findAll();
+        List<Reservations> list = reservationService.findAll();
 
-        assertEquals(3, reservations.size());
+        assertEquals(2, list.size());
+        assertTrue(list.contains(r1));
+        assertTrue(list.contains(r2));
+
         verify(reservationRepository).findAll();
     }
 
     @Test
     void testDeleteByIdExists() {
+        Long id = 1L;
 
-        when(reservationRepository.existsById(1L)).thenReturn(true);
+        // Mock : la réservation existe
+        when(reservationRepository.existsById(id)).thenReturn(true);
+        doNothing().when(reservationRepository).deleteById(id);
 
-        reservationService.deleteById(1L);
+        // Appel de la méthode
+        reservationService.deleteById(id);
 
-        verify(reservationRepository).existsById(1L);
-        verify(reservationRepository).deleteById(1L);
+        // Vérification
+        verify(reservationRepository).existsById(id);
+        verify(reservationRepository).deleteById(id);
+    }
+
+    @Test
+    void testUpdateReservationNotFound() {
+        Reservations r = new Reservations(5L, "Z");
+
+        when(reservationRepository.existsById(5L)).thenReturn(false);
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            reservationService.update(r);
+        });
+
+        assertEquals("Reservation non trouvée", exception.getMessage());
+        verify(reservationRepository).existsById(5L);
+    }
+
+    @Test
+    void testUpdateReservationSuccess() {
+        Reservations r = new Reservations(5L, "Z");
+
+        when(reservationRepository.existsById(5L)).thenReturn(true);
+        when(reservationRepository.save(r)).thenReturn(r);
+
+        Reservations updated = reservationService.update(r);
+
+        assertEquals(r, updated);
+        verify(reservationRepository).existsById(5L);
+        verify(reservationRepository).save(r);
     }
 }

@@ -43,11 +43,11 @@ public class ReservationService implements Reservationi {
     public Reservations update(Reservations reservations) {
 
         if (reservations == null || reservations.getId() == null) {
-            throw new RuntimeException("Réservation invalide");
+            throw new RuntimeException("Reservation non trouvée");
         }
 
         if (!reservationRepository.existsById(reservations.getId())) {
-            throw new RuntimeException("Réservation introuvable");
+            throw new RuntimeException("Reservation non trouvée");
         }
 
         logger.info("Mise à jour de la réservation avec l'id : {}", reservations.getId());
@@ -58,10 +58,12 @@ public class ReservationService implements Reservationi {
     public void deleteById(Long id) {
 
         if (!reservationRepository.existsById(id)) {
-            throw new RuntimeException("Réservation introuvable");
+            throw new RuntimeException("Reservation non trouvée");
         }
 
         logger.warn("Suppression de la réservation avec l'id : {}", id);
         reservationRepository.deleteById(id);
     }
+
+
 }
