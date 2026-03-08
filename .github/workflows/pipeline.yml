@@ -64,9 +64,11 @@ jobs:
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
             -Dsonar.organization=ton-org
             -Dsonar.projectKey=covoiturage
             -Dsonar.projectName=Covoiturage
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+          projectBaseDir: .
