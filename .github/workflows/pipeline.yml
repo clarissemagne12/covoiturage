@@ -65,7 +65,8 @@ jobs:
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
         with:
-          organization: covoiturage # remplace par ton organisation SonarCloud
-          projectKey: covoiturage-key  # la clé que tu as créée
-          projectName: covoiturage
-          token: squ_90608e0a5bd646e06bfce4349fe4d106658be55e
+          args: >
+            -Dsonar.organization=ton-org
+            -Dsonar.projectKey=covoiturage
+            -Dsonar.projectName=Covoiturage
+            -Dsonar.squ_90608e0a5bd646e06bfce4349fe4d106658be55e
