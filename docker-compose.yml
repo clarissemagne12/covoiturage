@@ -1,35 +1,21 @@
-version: "3.8"
-
+version: '3.8'
 services:
   mysql:
     image: mysql:8
-    container_name: mysql-covoiturage
-    restart: always
+    container_name: mysql
     environment:
-      MYSQL_ROOT_PASSWORD: voiture1
+      MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: covoiturage
     ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
+      - "3308:3306"   # port libre sur Windows
 
-  sonarqube:
-    image: sonarqube:latest
-    container_name: sonarqube
-    environment:
-      SONAR_ES_BOOTSTRAP_CHECKS_DISABLE: "true"
-    ports:
-      - "9000:9000"
+  covoiturage:
+    image: covoiturage:latest
     depends_on:
       - mysql
-
-  app:
-    build: .
-    container_name: covoiturage-app
     ports:
       - "8080:8080"
-    depends_on:
-      - mysql
-
-volumes:
-  mysql_data:
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/covoiturage
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
