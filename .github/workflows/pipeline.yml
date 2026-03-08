@@ -69,4 +69,4 @@ jobs:
         run: mvn sonar:sonar \
           -Dsonar.projectKey=projetTest \
           -Dsonar.host.url=$SONAR_HOST_URL \
-          -Dsonar.login=$SONAR_TOKEN
+          -Dsonar.login=sqp_87d53f5d5e414f14a296cda8573dbb5d62ebd4
