@@ -69,4 +69,4 @@ jobs:
             -Dsonar.organization=ton-org
             -Dsonar.projectKey=covoiturage
             -Dsonar.projectName=Covoiturage
-            -Dsonar.squ_90608e0a5bd646e06bfce4349fe4d106658be55e
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
