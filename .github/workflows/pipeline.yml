@@ -68,4 +68,4 @@ jobs:
           organization: covoiturage # remplace par ton organisation SonarCloud
           projectKey: covoiturage-key  # la clé que tu as créée
           projectName: covoiturage
-          token: ${{ secrets.SONAR_TOKEN }}
+          token: squ_90608e0a5bd646e06bfce4349fe4d106658be55e
