@@ -1,4 +1,4 @@
-name: Java CI with Maven and SonarQube
+name: Java CI with Maven and SonarCloud
 
 on:
   push:
@@ -62,11 +62,10 @@ jobs:
           name: test-results
           path: target/surefire-reports
 
-      - name: SonarQube Analysis
-        env:
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn sonar:sonar \
-          -Dsonar.projectKey=projetTest \
-          -Dsonar.host.url=$SONAR_HOST_URL \
-          -Dsonar.login=sqp_87d53f5d5e414f14a296cda8573dbb5d62ebd4
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v2
+        with:
+          organization: covoiturage # remplace par ton organisation SonarCloud
+          projectKey: covoiturage-key  # la clé que tu as créée
+          projectName: covoiturage
+          token: ${{ secrets.SONAR_TOKEN }}
